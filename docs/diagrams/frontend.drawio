@@ -1,0 +1,159 @@
+<mxfile host="65bd71144e">
+    <diagram id="zqWyfWUFJKQsTW7R4NWB" name="Page-1">
+        <mxGraphModel dx="810" dy="1157" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="gradio.Server" style="whiteSpace=wrap;html=1;aspect=fixed;verticalAlign=top;" vertex="1" parent="1">
+                    <mxGeometry x="100" y="130" width="610" height="610" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" style="edgeStyle=none;html=1;" edge="1" parent="1" source="3" target="12">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="Three.js Project" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;" vertex="1" parent="1">
+                    <mxGeometry x="345" y="190" width="315" height="460" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="js components" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="365" y="240" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="html files" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="365" y="310" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="Assets (shapes)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="520" y="400" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="Assets (textures)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="520" y="480" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="Assets (audio)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="520" y="560" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" value="renderer" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="520" y="240" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="renderer" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="520" y="310" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="14" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="12" target="13">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" value="gr.HTML" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="170" y="390" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="13" value="gr.Column/gr.Blocks" style="whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="1">
+                    <mxGeometry x="170" y="250" width="120" height="60" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="_cdjGzxVcKNaE8Rcp1jD" name="Page-2">
+        <mxGraphModel dx="2750" dy="1157" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-1" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="160" width="720" height="430" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-2" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="630" width="720" height="430" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-3" value="" style="sketch=0;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.databases.database_cube;" vertex="1" parent="1">
+                    <mxGeometry x="323" y="295" width="154" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-4" value="Rubics Instructor" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=20;" vertex="1" parent="1">
+                    <mxGeometry x="302.5" y="210" width="195" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-5" value="Start" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="345" y="500" width="110" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-6" value="#Placeholder questions on how expert with 3x3 Rubics#" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="240" y="680" width="310" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-7" value="" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="240" y="760" width="310" height="270" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-8" value="" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="270" y="790" width="40" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-9" value="Never Solved them" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="357.5" y="795" width="140" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-10" value="" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="270" y="850" width="40" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-11" value="Can solve one color" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="357.5" y="850" width="140" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-12" value="" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="270" y="910" width="40" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-13" value="&amp;gt;2 minutes" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="355" y="910" width="140" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-14" value="" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="270" y="970" width="40" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-15" value="&amp;lt;1 minute" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="355" y="975" width="140" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-16" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;Landing Page&lt;/h1&gt;&lt;p&gt;Rubics is in Three component, rotate slowly counterclockwise horizontally.&lt;/p&gt;&lt;p&gt;If time allows:&lt;/p&gt;&lt;p&gt;- The scramble effect of Rubics&lt;/p&gt;&lt;p&gt;- Controls on click on Rubics&lt;/p&gt;&lt;p&gt;- Resolve cubics animation&lt;/p&gt;&lt;p&gt;- Loop&lt;/p&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="780" y="252.5" width="180" height="245" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-17" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;Onboarding&lt;/h1&gt;&lt;p&gt;Store as classification for instructor memory.&lt;/p&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="780" y="650" width="180" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-18" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="1100" width="720" height="430" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-19" value="Store memory" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="820" y="760" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-20" value="Load References" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="820" y="820" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-21" value="Render Pages" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="820" y="880" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-22" value="Await Small LM" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="820" y="940" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-23" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;So, you are xxx&lt;/h1&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;# Placeholder text to showcase some instructions to help the user increase their performance to solve Rubics Cube&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;# Text keep rendering in a TPS that is controlled and length controlled&lt;/span&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;&lt;/span&gt;&lt;/p&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="455" y="1180" width="180" height="270" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-24" value="" style="sketch=0;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.databases.database_cube;" vertex="1" parent="1">
+                    <mxGeometry x="148.5" y="1230" width="154" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-25" value="Click me!" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="195.5" y="1420" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-26" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;Prelude&lt;/h1&gt;&lt;p&gt;Related to previous memory about the capability of the user based on the question.&lt;/p&gt;&lt;p&gt;Components:&lt;/p&gt;&lt;p&gt;- Left column render Rubic Cube&lt;/p&gt;&lt;p&gt;- Right Column render Text&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Left column&lt;/p&gt;&lt;p&gt;- Rubics clickable&lt;/p&gt;&lt;p&gt;- Rubics solvable&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Right Column&lt;/p&gt;&lt;p&gt;- Render welcoming text&lt;/p&gt;&lt;p&gt;- Based on the level of user, show possible to solve it better&amp;nbsp;&lt;/p&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="810" y="1105" width="180" height="420" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-27" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="1570" width="720" height="430" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-28" value="" style="sketch=0;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.databases.database_cube;" vertex="1" parent="1">
+                    <mxGeometry x="323" y="1705" width="154" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-29" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;Try to Solve this!&lt;/h1&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;align=center;" vertex="1" parent="1">
+                    <mxGeometry x="310" y="1610" width="180" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-30" value="00:00:00" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;" vertex="1" parent="1">
+                    <mxGeometry x="370" y="1900" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-31" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;If non beginner&lt;/h1&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(63, 63, 63); background-color: transparent;&quot;&gt;Controls:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(63, 63, 63); background-color: transparent;&quot;&gt;- Mouse clicks on sides&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(63, 63, 63); background-color: transparent;&quot;&gt;- Keyboard mapping&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: transparent; color: rgb(63, 63, 63);&quot;&gt;- Timer, starts on clicks or keyboard first press&amp;nbsp;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: transparent; color: rgb(63, 63, 63);&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: transparent; color: rgb(63, 63, 63);&quot;&gt;Button&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: transparent; color: rgb(63, 63, 63);&quot;&gt;- Give up button&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: transparent; color: rgb(63, 63, 63);&quot;&gt;- Then the rubics solve itself&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: transparent; color: rgb(63, 63, 63);&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: transparent; color: rgb(63, 63, 63);&quot;&gt;Good to have:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: transparent; color: rgb(63, 63, 63);&quot;&gt;- A solver sequence formula on the side, opacity low&lt;/span&gt;&lt;/p&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="810" y="1570" width="180" height="420" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-32" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-960" y="1570" width="720" height="430" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-33" value="Give up" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="370" y="1940" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="jz4z2MhY_K-bpB4hze0K-34" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;If non beginner&lt;/h1&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(63, 63, 63); background-color: transparent;&quot;&gt;Controls:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(63, 63, 63); background-color: transparent;&quot;&gt;- Mouse clicks on sides&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(63, 63, 63); background-color: transparent;&quot;&gt;- Keyboard mapping&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: transparent; color: rgb(63, 63, 63);&quot;&gt;- Timer, starts on clicks or keyboard first press&amp;nbsp;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: transparent; color: rgb(63, 63, 63);&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: transparent; color: rgb(63, 63, 63);&quot;&gt;Button&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: transparent; color: rgb(63, 63, 63);&quot;&gt;- Give up button&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: transparent; color: rgb(63, 63, 63);&quot;&gt;- Then the rubics solve itself&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: transparent; color: rgb(63, 63, 63);&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: transparent; color: rgb(63, 63, 63);&quot;&gt;Good to have:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: transparent; color: rgb(63, 63, 63);&quot;&gt;- A solver sequence formula on the side, opacity low&lt;/span&gt;&lt;/p&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="-230" y="1570" width="180" height="420" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

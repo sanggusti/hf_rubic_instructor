@@ -1,0 +1,107 @@
+.threejs-canvas
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  outline: none;
+  display: block;
+}
+
+.pixi-canvas
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  outline: none;
+}
+
+#app {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 480px;
+  background: #999;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: #111;
+  overflow: hidden;
+}
+
+#app #debugger {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(20, 20, 20, 0.78);
+  color: #eee;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  min-width: 220px;
+  max-width: 280px;
+  box-shadow: 0 6px 20px rgba(0,0,0,.35);
+  user-select: none;
+  z-index: 10;
+}
+
+#debugger h3 {
+  margin: 0 0 6px 0;
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #9cf;
+}
+
+#debugger .row { display: flex; justify-content: space-between; gap: 8px; }
+#debugger .solved-yes { color: #6f6; }
+#debugger .solved-no  { color: #f88; }
+
+#debugger .faces {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  gap: 6px;
+  margin: 8px 0;
+}
+#debugger .face {
+  display: grid;
+  grid-template-columns: repeat(3, 10px);
+  grid-template-rows: repeat(3, 10px);
+  gap: 1px;
+  padding: 2px;
+  background: #000;
+  border-radius: 2px;
+}
+#debugger .face .label {
+  grid-column: 1 / span 3;
+  text-align: center;
+  font-size: 9px;
+  color: #aaa;
+  margin-bottom: 1px;
+}
+#debugger .sticker { width: 10px; height: 10px; border-radius: 1px; }
+
+#debugger .history {
+  max-height: 80px;
+  overflow-y: auto;
+  font-size: 11px;
+  background: rgba(0,0,0,0.35);
+  padding: 4px 6px;
+  border-radius: 4px;
+  white-space: normal;
+  word-break: break-word;
+}
+
+#app #help {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: rgba(20,20,20,0.78);
+  color: #ddd;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  line-height: 1.5;
+  z-index: 10;
+}
+#help b { color: #9cf; }
