@@ -16,6 +16,12 @@ export function attachKeyboard(animator: MoveAnimator, opts: KeyboardOptions = {
   function onKey(ev: KeyboardEvent): void {
     if (ev.repeat) return;
     if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
+    // Don't steal keys from form fields / contenteditable hosts (Gradio textboxes, etc.).
+    const t = ev.target as HTMLElement | null;
+    if (t) {
+      const tag = t.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || t.isContentEditable) return;
+    }
     const key = ev.key;
     if (key === ' ') {
       ev.preventDefault();

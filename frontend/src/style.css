@@ -1,33 +1,35 @@
 .threejs-canvas
 {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
+  width: 100%;
+  height: 100%;
   outline: none;
+  display: block;
 }
 
 .pixi-canvas
 {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   outline: none;
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
+#app {
+  position: relative;
+  width: 100%;
   height: 100%;
+  min-height: 480px;
   background: #999;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   color: #111;
   overflow: hidden;
 }
 
-#app { width: 100vw; height: 100vh; }
-
-#debugger {
-  position: fixed;
+#app #debugger {
+  position: absolute;
   top: 12px;
   right: 12px;
   background: rgba(20, 20, 20, 0.78);
@@ -90,8 +92,8 @@ html, body {
   word-break: break-word;
 }
 
-#help {
-  position: fixed;
+#app #help {
+  position: absolute;
   bottom: 12px;
   left: 12px;
   background: rgba(20,20,20,0.78);
