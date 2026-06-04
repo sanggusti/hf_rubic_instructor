@@ -216,3 +216,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Node / Vite (frontend)
+node_modules/
+frontend/node_modules/
+# We commit the built bundle so HF Spaces doesn't need Node:
+!frontend/dist/
+!frontend/dist/**
