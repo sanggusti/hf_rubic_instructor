@@ -7,6 +7,7 @@ const HISTORY_LIMIT = 20;
 
 export class DebuggerPanel {
   private el: HTMLDivElement;
+  private toggleEl: HTMLButtonElement;
   private historyEl!: HTMLDivElement;
   private statusEl!: HTMLSpanElement;
   private faceEls = new Map<FaceKey, HTMLDivElement[]>(); // 9 stickers per face
@@ -17,9 +18,20 @@ export class DebuggerPanel {
     this.el.id = 'debugger';
     parent.appendChild(this.el);
 
+    const head = document.createElement('div');
+    head.className = 'dbg-head';
     const title = document.createElement('h3');
     title.textContent = "Rubik's Debugger";
-    this.el.appendChild(title);
+    head.appendChild(title);
+
+    const close = document.createElement('button');
+    close.className = 'dbg-close';
+    close.type = 'button';
+    close.setAttribute('aria-label', 'Close debugger');
+    close.textContent = '\u00d7';
+    close.addEventListener('click', () => this.hide());
+    head.appendChild(close);
+    this.el.appendChild(head);
 
     const status = document.createElement('div');
     status.className = 'row';
@@ -49,13 +61,32 @@ export class DebuggerPanel {
     this.el.appendChild(facesWrap);
 
     const histTitle = document.createElement('div');
-    histTitle.style.marginTop = '6px';
-    histTitle.textContent = 'History:';
+    histTitle.className = 'hist-title';
+    histTitle.textContent = 'History';
     this.el.appendChild(histTitle);
 
     this.historyEl = document.createElement('div');
     this.historyEl.className = 'history';
     this.el.appendChild(this.historyEl);
+
+    // Floating reopen toggle (hidden while the panel is open).
+    this.toggleEl = document.createElement('button');
+    this.toggleEl.id = 'dbg-toggle';
+    this.toggleEl.type = 'button';
+    this.toggleEl.setAttribute('aria-label', 'Open debugger');
+    this.toggleEl.innerHTML = `<span class="dot"></span><span>Debugger</span>`;
+    this.toggleEl.addEventListener('click', () => this.show());
+    parent.appendChild(this.toggleEl);
+  }
+
+  hide(): void {
+    this.el.classList.add('is-hidden');
+    this.toggleEl.classList.add('is-visible');
+  }
+
+  show(): void {
+    this.el.classList.remove('is-hidden');
+    this.toggleEl.classList.remove('is-visible');
   }
 
   pushMove(move: string): void {

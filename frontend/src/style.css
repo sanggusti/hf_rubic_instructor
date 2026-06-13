@@ -1,3 +1,31 @@
+:root {
+  /* Cool palette */
+  --bg-deep: #0a0e1a;
+  --bg-mid: #131a2e;
+  --bg-glow-a: #1c2a52;
+  --bg-glow-b: #0d2333;
+  --accent: #5ad7ff;
+  --accent-soft: #9cf;
+  --accent-dim: rgba(90, 215, 255, 0.35);
+  --panel-bg: rgba(16, 22, 38, 0.62);
+  --panel-border: rgba(120, 180, 255, 0.18);
+  --text: #e6edf6;
+  --text-dim: #8ea0bf;
+  --ok: #5ef2a0;
+  --no: #ff7a8a;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-deep);
+  overflow: hidden;
+}
+
 .threejs-canvas
 {
   position: absolute;
@@ -7,6 +35,7 @@
   height: 100%;
   outline: none;
   display: block;
+  z-index: 1;
 }
 
 .pixi-canvas
@@ -22,86 +51,225 @@
   width: 100%;
   height: 100%;
   min-height: 480px;
-  background: #999;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  color: #111;
+  color: var(--text);
   overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(120% 90% at 18% 12%, var(--bg-glow-a) 0%, transparent 55%),
+    radial-gradient(120% 110% at 85% 88%, var(--bg-glow-b) 0%, transparent 55%),
+    linear-gradient(150deg, var(--bg-mid) 0%, var(--bg-deep) 70%);
+}
+
+/* Slow drifting aurora layer, behind the canvas */
+#app::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  z-index: 0;
+  background:
+    radial-gradient(40% 50% at 30% 30%, rgba(90, 215, 255, 0.10) 0%, transparent 60%),
+    radial-gradient(45% 55% at 72% 68%, rgba(140, 110, 255, 0.10) 0%, transparent 60%);
+  filter: blur(8px);
+  animation: aurora-drift 26s ease-in-out infinite alternate;
+}
+
+/* Vignette above the canvas to seat the cube in the scene */
+#app::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(120% 100% at 50% 50%, transparent 60%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+@keyframes aurora-drift {
+  0%   { transform: translate3d(-3%, -2%, 0) scale(1.02); }
+  50%  { transform: translate3d(2%, 3%, 0) scale(1.08); }
+  100% { transform: translate3d(4%, -3%, 0) scale(1.04); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #app::before { animation: none; }
+}
+
+/* ---- Glass panel shared look ---- */
+#app #debugger,
+#app #help,
+#app #dbg-toggle {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.45),
+    0 1px 0 rgba(255, 255, 255, 0.06) inset;
 }
 
 #app #debugger {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  background: rgba(20, 20, 20, 0.78);
-  color: #eee;
-  padding: 12px 14px;
-  border-radius: 8px;
+  top: 16px;
+  right: 16px;
+  color: var(--text);
+  padding: 14px 16px 16px;
+  border-radius: 14px;
   font-size: 12px;
   line-height: 1.4;
-  min-width: 220px;
-  max-width: 280px;
-  box-shadow: 0 6px 20px rgba(0,0,0,.35);
+  min-width: 232px;
+  max-width: 290px;
   user-select: none;
   z-index: 10;
+  transform-origin: top right;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+#app #debugger.is-hidden {
+  opacity: 0;
+  transform: scale(0.94) translateY(-6px);
+  pointer-events: none;
+}
+
+#debugger .dbg-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 0 10px 0;
 }
 
 #debugger h3 {
-  margin: 0 0 6px 0;
+  margin: 0;
   font-size: 12px;
-  letter-spacing: .08em;
+  letter-spacing: .12em;
   text-transform: uppercase;
-  color: #9cf;
+  color: var(--accent);
+  text-shadow: 0 0 12px var(--accent-dim);
 }
 
-#debugger .row { display: flex; justify-content: space-between; gap: 8px; }
-#debugger .solved-yes { color: #6f6; }
-#debugger .solved-no  { color: #f88; }
+#debugger .dbg-close {
+  appearance: none;
+  border: 1px solid var(--panel-border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-dim);
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+#debugger .dbg-close:hover {
+  color: var(--accent);
+  border-color: var(--accent-dim);
+  background: rgba(90, 215, 255, 0.10);
+}
+
+#debugger .row { display: flex; justify-content: space-between; gap: 8px; color: var(--text-dim); }
+#debugger .solved-yes { color: var(--ok); text-shadow: 0 0 10px rgba(94, 242, 160, 0.4); }
+#debugger .solved-no  { color: var(--no); }
 
 #debugger .faces {
   display: grid;
   grid-template-columns: repeat(4, auto);
-  gap: 6px;
-  margin: 8px 0;
+  gap: 8px;
+  margin: 10px 0;
 }
 #debugger .face {
   display: grid;
-  grid-template-columns: repeat(3, 10px);
-  grid-template-rows: repeat(3, 10px);
-  gap: 1px;
-  padding: 2px;
-  background: #000;
-  border-radius: 2px;
+  grid-template-columns: repeat(3, 11px);
+  grid-template-rows: repeat(3, 11px);
+  gap: 1.5px;
+  padding: 3px;
+  background: rgba(0, 0, 0, 0.32);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
 }
 #debugger .face .label {
   grid-column: 1 / span 3;
   text-align: center;
   font-size: 9px;
-  color: #aaa;
-  margin-bottom: 1px;
+  letter-spacing: .1em;
+  color: var(--text-dim);
+  margin-bottom: 2px;
 }
-#debugger .sticker { width: 10px; height: 10px; border-radius: 1px; }
+#debugger .sticker {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+}
+
+#debugger .hist-title {
+  margin-top: 8px;
+  color: var(--text-dim);
+  font-size: 11px;
+  letter-spacing: .06em;
+}
 
 #debugger .history {
+  margin-top: 4px;
   max-height: 80px;
   overflow-y: auto;
   font-size: 11px;
-  background: rgba(0,0,0,0.35);
-  padding: 4px 6px;
-  border-radius: 4px;
+  color: var(--text);
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 6px 8px;
+  border-radius: 7px;
   white-space: normal;
   word-break: break-word;
+}
+#debugger .history::-webkit-scrollbar { width: 6px; }
+#debugger .history::-webkit-scrollbar-thumb { background: var(--accent-dim); border-radius: 6px; }
+
+/* Floating reopen toggle, shown when the debugger is closed */
+#app #dbg-toggle {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 11;
+  appearance: none;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border-radius: 11px;
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+#app #dbg-toggle.is-visible { display: inline-flex; }
+#app #dbg-toggle:hover {
+  border-color: var(--accent-dim);
+  background: rgba(90, 215, 255, 0.10);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4), 0 0 18px var(--accent-dim);
+}
+#app #dbg-toggle .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
 }
 
 #app #help {
   position: absolute;
-  bottom: 12px;
-  left: 12px;
-  background: rgba(20,20,20,0.78);
-  color: #ddd;
-  padding: 8px 12px;
-  border-radius: 6px;
+  bottom: 16px;
+  left: 16px;
+  color: var(--text-dim);
+  padding: 10px 14px;
+  border-radius: 12px;
   font-size: 11px;
-  line-height: 1.5;
+  line-height: 1.6;
   z-index: 10;
+  max-width: min(70vw, 560px);
 }
-#help b { color: #9cf; }
+#help b { color: var(--accent-soft); font-weight: 600; }
