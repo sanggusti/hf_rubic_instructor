@@ -1,0 +1,57 @@
+name: Deploy to Hugging Face Space
+
+on:
+    push:
+        branches: [main]
+    workflow_dispatch:
+
+# Allow only one deploy at a time; cancel older in-progress runs.
+concurrency:
+    group: deploy-hf
+    cancel-in-progress: true
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout (full history)
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Set up Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+                  cache: npm
+                  cache-dependency-path: frontend/package-lock.json
+
+            # The HF Space uses the Gradio SDK (Python only) and won't run npm.
+            # Build the Three.js bundle here and commit it so the Space gets the
+            # static assets it serves from frontend/dist/.
+            - name: Build frontend bundle
+              working-directory: frontend
+              run: |
+                  npm ci
+                  npm run build
+
+            - name: Commit built bundle for the Space
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+                  git add -f frontend/dist
+                  git commit -m "ci: build frontend bundle for HF Space" || echo "No changes to commit"
+
+            - name: Push to Hugging Face Space
+              env:
+                  HF_TOKEN: ${{ secrets.HF_TOKEN }}
+                  # e.g. "your-username/your-space-name"
+                  HF_SPACE_ID: ${{ secrets.HF_SPACE_ID }}
+              run: |
+                  if [ -z "$HF_TOKEN" ] || [ -z "$HF_SPACE_ID" ]; then
+                    echo "::error::HF_TOKEN secret and HF_SPACE_ID secret must be set."
+                    exit 1
+                  fi
+                  git push --force \
+                    "https://github-actions:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE_ID}.git" \
+                    HEAD:main
