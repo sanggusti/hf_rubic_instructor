@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import type { FaceKey } from '../../core/state';
+import { Cubelet } from './cubelets';
 
 // Standard Rubik's color scheme.
 export const FACE_COLORS: Record<FaceKey, number> = {
@@ -23,6 +24,8 @@ export interface Cubie {
   mesh: THREE.Object3D;
   // Logical lattice coordinates in {-1,0,1}^3 (updated after each move).
   coord: THREE.Vector3;
+  // Logical sticker/orientation model, kept in sync with `coord` after each move.
+  cubelet: Cubelet;
 }
 
 export class CubeMesh {
@@ -52,7 +55,11 @@ export class CubeMesh {
 
           cubie.position.set(x * step, y * step, z * step);
           this.root.add(cubie);
-          this.cubies.push({ mesh: cubie, coord: new THREE.Vector3(x, y, z) });
+          this.cubies.push({
+            mesh: cubie,
+            coord: new THREE.Vector3(x, y, z),
+            cubelet: makeCubelet(x, y, z)
+          });
         }
       }
     }
@@ -61,6 +68,23 @@ export class CubeMesh {
   cubiesOnLayer(axis: Axis, slice: number): Cubie[] {
     return this.cubies.filter(c => Math.round(c.coord[axis]) === slice);
   }
+}
+
+// Build the logical Cubelet for a cubie at lattice coords (x, y, z), each in {-1,0,1}.
+// Sticker colors are placed in slot order [front, up, right, down, left, back],
+// matching the visual stickers added in the constructor. The id encodes the solved
+// address so the cubelet's addressX/Y/Z line up with `coord`.
+function makeCubelet(x: number, y: number, z: number): Cubelet {
+  const colors: (FaceKey | null)[] = [
+    z === 1 ? 'F' : null,  // front
+    y === 1 ? 'U' : null,  // up
+    x === 1 ? 'R' : null,  // right
+    y === -1 ? 'D' : null, // down
+    x === -1 ? 'L' : null, // left
+    z === -1 ? 'B' : null  // back
+  ];
+  const id = (x + 1) + (1 - y) * 3 + (1 - z) * 9;
+  return new Cubelet(id, colors);
 }
 
 function addSticker(parent: THREE.Object3D, face: FaceKey, axis: Axis, sign: 1 | -1) {
