@@ -169,7 +169,10 @@ with gr.Blocks(title="Rubik's Cube Instructor", fill_height=True) as demo:
         # Inject the Vite bundle into the page on load.
         demo.load(None, inputs=None, outputs=None, js=LOAD_BUNDLE_JS)
 
-app = gr.mount_gradio_app(app, demo, path="/")
+# ssr_mode=False prevents gradio from starting a second (Node SSR) server on the
+# same port. On HF Spaces the FastAPI app is already served on 7860, so the SSR
+# server would collide ("address already in use").
+app = gr.mount_gradio_app(app, demo, path="/", ssr_mode=False)
 
 
 if __name__ == "__main__":
