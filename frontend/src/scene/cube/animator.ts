@@ -14,11 +14,11 @@ export interface MoveSpec {
 const BASE_MOVES: Record<string, MoveSpec> = {
   // Face turns. CW looking from outside the named face.
   // U: top layer, viewed from +Y => CW around +Y => dir +1.
-  U: { axis: 'y', slices: [1],  dir: 1 },
+  U: { axis: 'y', slices: [1], dir: 1 },
   D: { axis: 'y', slices: [-1], dir: -1 },
-  R: { axis: 'x', slices: [1],  dir: 1 },
+  R: { axis: 'x', slices: [1], dir: 1 },
   L: { axis: 'x', slices: [-1], dir: -1 },
-  F: { axis: 'z', slices: [1],  dir: 1 },
+  F: { axis: 'z', slices: [1], dir: 1 },
   B: { axis: 'z', slices: [-1], dir: -1 },
   // Slice turns: middle layer. M follows L (dir matches L), E follows D, S follows F.
   M: { axis: 'x', slices: [0], dir: -1 },
@@ -51,15 +51,15 @@ function rotateCoord(coord: THREE.Vector3, axis: Axis, dir: 1 | -1): void {
   if (axis === 'x') {
     const y = c.y, z = c.z;
     if (dir === 1) { c.y = -z; c.z = y; }
-    else           { c.y = z;  c.z = -y; }
+    else { c.y = z; c.z = -y; }
   } else if (axis === 'y') {
     const x = c.x, z = c.z;
-    if (dir === 1) { c.x = z;  c.z = -x; }
-    else           { c.x = -z; c.z = x; }
+    if (dir === 1) { c.x = z; c.z = -x; }
+    else { c.x = -z; c.z = x; }
   } else {
     const x = c.x, y = c.y;
     if (dir === 1) { c.x = -y; c.y = x; }
-    else           { c.x = y;  c.y = -x; }
+    else { c.x = y; c.y = -x; }
   }
 }
 
@@ -96,7 +96,11 @@ interface ActiveMove {
 }
 
 export class MoveAnimator {
-  private queue: MoveJob[] = [];
+  // Queue holds move *names* only. The set of affected cubies is resolved at
+  // execution time (beginNext), because each move changes which cubies sit in a
+  // given layer. Snapshotting cubies at enqueue time corrupts batched sequences
+  // like scrambles, where many moves are queued before any of them animate.
+  private queue: string[] = [];
   private current: ActiveMove | null = null;
   readonly durationMs: number;
   onMoveStart?: (name: string) => void;
@@ -107,9 +111,8 @@ export class MoveAnimator {
   }
 
   enqueue(name: string): boolean {
-    const job = buildMoveJob(this.cube, name);
-    if (!job) return false;
-    this.queue.push(job);
+    if (!parseMove(name)) return false;
+    this.queue.push(name);
     return true;
   }
 
@@ -130,7 +133,10 @@ export class MoveAnimator {
   }
 
   private beginNext(now: number): void {
-    const job = this.queue.shift()!;
+    const name = this.queue.shift()!;
+    // Resolve affected cubies now, against the current cube state.
+    const job = buildMoveJob(this.cube, name);
+    if (!job) return;
     const pivot = new THREE.Group();
     this.parent.add(pivot);
     const preState = job.affected.map(cubie => ({
@@ -156,6 +162,7 @@ export class MoveAnimator {
       entry.cubie.mesh.position.copy(newPos);
       entry.cubie.mesh.quaternion.copy(newQuat);
       rotateCoord(entry.cubie.coord, c.job.spec.axis, c.job.spec.dir);
+      entry.cubie.cubelet.rotate(c.job.spec.axis, c.job.spec.dir);
     }
     this.parent.remove(c.pivot);
     const finishedName = c.job.name;
