@@ -1,3 +1,14 @@
+---
+title: HF Rubic Instructor
+emoji: 🧩
+colorFrom: indigo
+colorTo: purple
+sdk: gradio
+sdk_version: 6.16.0
+app_file: app.py
+pinned: false
+---
+
 # HF Rubic Instructor
 
 Rubic's Cube Instructor, built on Gradio and small instruct Language Model
