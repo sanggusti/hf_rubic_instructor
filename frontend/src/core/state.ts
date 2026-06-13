@@ -69,7 +69,9 @@ const CYCLES: Record<FaceKey, Cycle> = {
 };
 
 function applyFaceTurn(state: State, face: FaceKey, prime: boolean): void {
-  state[face] = prime ? rotateFaceCCW(state[face]) : rotateFaceCW(state[face]);
+  // The turned face's own stickers rotate opposite to the array-index sense:
+  // a non-prime turn maps new[6] = old[0] in viewer indexing, which is rotateFaceCCW.
+  state[face] = prime ? rotateFaceCW(state[face]) : rotateFaceCCW(state[face]);
   const cycle = CYCLES[face];
   const order = prime ? [3, 2, 1, 0] : [0, 1, 2, 3];
   const groups = order.map(i => cycle[i]);
@@ -83,31 +85,25 @@ function applyFaceTurn(state: State, face: FaceKey, prime: boolean): void {
   for (let k = 0; k < 3; k++) state[lastFace][lastIdx[k]] = tmp[k];
 }
 
-// Slice and whole-cube rotations are expressed via face turns.
+// Slice moves expressed via face turns + whole-cube rotation. All three layers of
+// an axis commute (same rotation axis), so e.g. M = x' with the R and L layers
+// rotated back: M = R L' x'. Each pair below is exact inverses.
 const COMPOUND: Record<string, string[]> = {
-  M:  ["L", "R'", "x'"],   // middle layer follows L
-  "M'": ["L'", "R", "x"],
-  E:  ["D", "U'", "y'"],   // equatorial follows D
-  "E'": ["D'", "U", "y"],
-  S:  ["F'", "B", "z"],    // standing follows F
-  "S'": ["F", "B'", "z'"],
-  // Whole-cube rotations re-color faces (leave logical state shape intact via face permutations).
-  // We model x/y/z as cycles of *labels* by applying face turns + relabel; here we approximate via face permutations:
+  M: ["R", "L'", "x'"],   // middle layer (x=0) follows L
+  "M'": ["R'", "L", "x"],
+  E: ["U", "D'", "y'"],   // equatorial layer (y=0) follows D
+  "E'": ["U'", "D", "y"],
+  S: ["F'", "B", "z"],    // standing layer (z=0) follows F
+  "S'": ["F", "B'", "z'"]
 };
 
 // Whole-cube rotation: permute face arrays + rotate each face.
-// x: rotate around R axis (clockwise looking from +X). F->U, U->B, B->D, D->F. L,R rotate.
+// Direction convention matches the visual animator (CW looking from the +axis
+// toward the origin), so the logical state stays in sync with the rendered cube.
+// x: CW from +X. The up sticker moves to front: U->F->D->B->U.
 function rotX(state: State, prime: boolean): void {
   const s = state;
   if (!prime) {
-    const F = s.F, U = s.U, B = s.B, D = s.D;
-    s.U = F;
-    s.B = rotateFaceCW(rotateFaceCW(U));
-    s.D = rotateFaceCW(rotateFaceCW(B));
-    s.F = D;
-    s.R = rotateFaceCW(s.R);
-    s.L = rotateFaceCCW(s.L);
-  } else {
     const F = s.F, U = s.U, B = s.B, D = s.D;
     s.F = U;
     s.U = rotateFaceCW(rotateFaceCW(B));
@@ -115,35 +111,35 @@ function rotX(state: State, prime: boolean): void {
     s.D = F;
     s.R = rotateFaceCCW(s.R);
     s.L = rotateFaceCW(s.L);
+  } else {
+    const F = s.F, U = s.U, B = s.B, D = s.D;
+    s.U = F;
+    s.B = rotateFaceCW(rotateFaceCW(U));
+    s.D = rotateFaceCW(rotateFaceCW(B));
+    s.F = D;
+    s.R = rotateFaceCW(s.R);
+    s.L = rotateFaceCCW(s.L);
   }
 }
-// y: rotate around U axis (clockwise looking from +Y). F->L, L->B, B->R, R->F.
+// y: CW from +Y. The front sticker moves to right: F->R->B->L->F.
 function rotY(state: State, prime: boolean): void {
   const s = state;
   if (!prime) {
     const F = s.F, L = s.L, B = s.B, R = s.R;
-    s.L = F; s.B = L; s.R = B; s.F = R;
-    s.U = rotateFaceCW(s.U);
-    s.D = rotateFaceCCW(s.D);
-  } else {
-    const F = s.F, L = s.L, B = s.B, R = s.R;
     s.F = L; s.L = B; s.B = R; s.R = F;
     s.U = rotateFaceCCW(s.U);
     s.D = rotateFaceCW(s.D);
+  } else {
+    const F = s.F, L = s.L, B = s.B, R = s.R;
+    s.L = F; s.B = L; s.R = B; s.F = R;
+    s.U = rotateFaceCW(s.U);
+    s.D = rotateFaceCCW(s.D);
   }
 }
-// z: rotate around F axis (clockwise looking from +Z). U->R, R->D, D->L, L->U.
+// z: CW from +Z. The up sticker moves to left: U->L->D->R->U.
 function rotZ(state: State, prime: boolean): void {
   const s = state;
   if (!prime) {
-    const U = s.U, R = s.R, D = s.D, L = s.L;
-    s.R = rotateFaceCW(U);
-    s.D = rotateFaceCW(R);
-    s.L = rotateFaceCW(D);
-    s.U = rotateFaceCW(L);
-    s.F = rotateFaceCW(s.F);
-    s.B = rotateFaceCCW(s.B);
-  } else {
     const U = s.U, R = s.R, D = s.D, L = s.L;
     s.L = rotateFaceCCW(U);
     s.U = rotateFaceCCW(R);
@@ -151,6 +147,14 @@ function rotZ(state: State, prime: boolean): void {
     s.D = rotateFaceCCW(L);
     s.F = rotateFaceCCW(s.F);
     s.B = rotateFaceCW(s.B);
+  } else {
+    const U = s.U, R = s.R, D = s.D, L = s.L;
+    s.R = rotateFaceCW(U);
+    s.D = rotateFaceCW(R);
+    s.L = rotateFaceCW(D);
+    s.U = rotateFaceCW(L);
+    s.F = rotateFaceCW(s.F);
+    s.B = rotateFaceCCW(s.B);
   }
 }
 
