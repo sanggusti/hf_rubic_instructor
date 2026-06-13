@@ -22,9 +22,24 @@ import gradio as gr
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
+# ZeroGPU detects GPU usage by scanning the Gradio app for functions decorated
+# with ``@spaces.GPU``. The package only exists on HF infra, so guard the import
+# for local dev. Replace ``_zerogpu_warmup`` with real model inference later.
+try:
+    import spaces  # type: ignore
+
+    @spaces.GPU
+    def _zerogpu_warmup() -> str:
+        return "ok"
+
+except ImportError:  # local dev without the `spaces` package
+    spaces = None  # type: ignore
+    _zerogpu_warmup = None  # type: ignore
+
 FRONTEND_DIR = Path(__file__).resolve().parent
 DIST_DIR = FRONTEND_DIR / "dist"
 ASSETS_PREFIX = "/cube-assets"
+
 
 
 def _read_built_assets() -> tuple[str, str] | None:
@@ -119,6 +134,13 @@ def _format_state(payload: str) -> str:
 with gr.Blocks(title="Rubik's Cube Instructor", fill_height=True) as demo:
     gr.Markdown("# Rubik's Cube Instructor")
     gr.HTML(MOUNT_HTML)
+
+    # Register the ZeroGPU entrypoint with the Gradio app so HF detects a
+    # @spaces.GPU function at startup (hidden; replace with real inference).
+    if _zerogpu_warmup is not None:
+        _gpu_trigger = gr.Button(visible=False)
+        _gpu_out = gr.Textbox(visible=False)
+        _gpu_trigger.click(_zerogpu_warmup, inputs=None, outputs=_gpu_out)
 
     if BUILD_OK:
         with gr.Accordion("Python ↔ Cube bridge (demo)", open=False):
