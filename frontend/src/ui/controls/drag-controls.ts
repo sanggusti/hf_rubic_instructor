@@ -46,9 +46,19 @@ export function attachDragControls(
     const hits = raycaster.intersectObjects(stickers, false);
     if (!hits.length) return null;
     const hit = hits[0];
-    const face = hit.object.userData.face as FaceKey;
     const cubie = findOwningCubie(cube, hit.object);
-    if (!cubie) return null;
+    if (!cubie || !hit.face) return null;
+    // Use the sticker's CURRENT world-facing direction, not its paint color
+    // (userData.face). After any turn a sticker can point a different way, so
+    // resolving the face from live geometry keeps dragging consistent.
+    const worldNormal = hit.face.normal
+      .clone()
+      .transformDirection(hit.object.matrixWorld)
+      .normalize();
+    // Force the normal to point outward (away from the cube centre at origin).
+    if (worldNormal.dot(hit.point) < 0) worldNormal.negate();
+    const face = faceFromWorldNormal(worldNormal);
+    if (!face) return null;
     return { face, point: hit.point.clone(), cubie };
   }
 
@@ -109,16 +119,48 @@ const FACE_NORMAL: Record<FaceKey, THREE.Vector3> = {
   B: new THREE.Vector3(0, 0, -1)
 };
 
-// In-plane axes for each face: two perpendicular unit vectors lying in the face plane.
-// Each entry maps a face to two rotation axes that quarter-turns of a layer along this face can pivot around.
-const FACE_PLANE_AXES: Record<FaceKey, [THREE.Vector3, THREE.Vector3]> = {
-  U: [new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 1)],
-  D: [new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 1)],
-  R: [new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1)],
-  L: [new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1)],
-  F: [new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 1, 0)],
-  B: [new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 1, 0)]
+// Map a (dominant axis, sign) of an outward normal to the cube face it represents.
+// Valid because the cube root sits at the world origin with identity orientation
+// (whole-cube turns bake into the cubie meshes), so world axes == cube axes.
+const AXIS_FACE: Record<Axis, { pos: FaceKey; neg: FaceKey }> = {
+  x: { pos: 'R', neg: 'L' },
+  y: { pos: 'U', neg: 'D' },
+  z: { pos: 'F', neg: 'B' }
 };
+
+function faceFromWorldNormal(n: THREE.Vector3): FaceKey | null {
+  const axis = dominantAxis(n);
+  if (!axis) return null;
+  return n[axis] >= 0 ? AXIS_FACE[axis].pos : AXIS_FACE[axis].neg;
+}
+
+// Positive unit vector for each cube axis.
+const AXIS_UNIT: Record<Axis, THREE.Vector3> = {
+  x: new THREE.Vector3(1, 0, 0),
+  y: new THREE.Vector3(0, 1, 0),
+  z: new THREE.Vector3(0, 0, 1)
+};
+
+// The two in-plane cube axes for each face (the axes that are NOT the face normal).
+// A drag on the face slides along these; the layer that turns rotates about whichever
+// of them the slide is perpendicular to.
+const IN_PLANE_AXES: Record<FaceKey, [Axis, Axis]> = {
+  U: ['x', 'z'],
+  D: ['x', 'z'],
+  R: ['y', 'z'],
+  L: ['y', 'z'],
+  F: ['x', 'y'],
+  B: ['x', 'y']
+};
+
+// World-space camera basis (right, up) extracted from its matrixWorld.
+function cameraBasis(camera: THREE.Camera): { right: THREE.Vector3; up: THREE.Vector3 } {
+  camera.updateMatrixWorld();
+  const e = camera.matrixWorld.elements;
+  const right = new THREE.Vector3(e[0], e[1], e[2]).normalize();
+  const up = new THREE.Vector3(e[4], e[5], e[6]).normalize();
+  return { right, up };
+}
 
 function resolveDragToMove(
   camera: THREE.Camera,
@@ -126,46 +168,36 @@ function resolveDragToMove(
   dx: number,
   dy: number
 ): string | null {
-  // Project the two in-plane axes from the hit point into screen space; pick the one whose
-  // screen direction better aligns with the drag vector. The cross product of that axis with
-  // the face normal selects the rotation axis of the layer being swiped, and the sign tells us
-  // which direction.
-  const screenDrag = new THREE.Vector2(dx, -dy); // y inverted for screen space
-  const [a1, a2] = FACE_PLANE_AXES[pending.hitFace];
-  const s1 = projectDirToScreen(camera, pending.hitWorldPoint, a1);
-  const s2 = projectDirToScreen(camera, pending.hitWorldPoint, a2);
-  const dot1 = Math.abs(s1.dot(screenDrag));
-  const dot2 = Math.abs(s2.dot(screenDrag));
-  const dragAxis = dot1 >= dot2 ? a1 : a2;
-  const dragScreen = dot1 >= dot2 ? s1 : s2;
-  const sign = Math.sign(dragScreen.dot(screenDrag)) as 1 | -1 | 0;
-  if (sign === 0) return null;
-
-  // The swiped layer rotates around the axis perpendicular to (face normal, dragAxis):
-  //   rotAxis = faceNormal × dragAxis.
+  // 1. Turn the 2D screen drag into a world-space direction using the camera basis,
+  //    then project it onto the hit face's plane. Working in world space (instead of
+  //    comparing the two in-plane axes by their skewed screen projections) makes the
+  //    axis choice stable from any camera angle.
+  const { right, up } = cameraBasis(camera);
+  const worldDrag = right.clone().multiplyScalar(dx).add(up.clone().multiplyScalar(-dy));
   const faceNormal = FACE_NORMAL[pending.hitFace];
-  const rotAxisVec = new THREE.Vector3().crossVectors(faceNormal, dragAxis).normalize();
-  const rotAxis = dominantAxis(rotAxisVec);
-  if (!rotAxis) return null;
-  const rotAxisSign = (rotAxisVec[rotAxis] >= 0 ? 1 : -1) as 1 | -1;
+  const inPlaneDrag = worldDrag.clone().addScaledVector(faceNormal, -worldDrag.dot(faceNormal));
+  if (inPlaneDrag.lengthSq() < 1e-12) return null;
 
-  // The slice is the cubie's coord on this rotation axis.
+  // 2. Decompose the in-plane drag against the two in-plane cube axes. The slide runs
+  //    mostly along one of them; the rotating layer pivots about the OTHER (the axis
+  //    the drag is most perpendicular to).
+  const [axisA, axisB] = IN_PLANE_AXES[pending.hitFace];
+  const compA = Math.abs(inPlaneDrag.dot(AXIS_UNIT[axisA]));
+  const compB = Math.abs(inPlaneDrag.dot(AXIS_UNIT[axisB]));
+  const rotAxis: Axis = compA >= compB ? axisB : axisA;
+
+  // 3. The slice is the hit cubie's coordinate along the rotation axis.
   const slice = Math.round(pending.hitCubie.coord[rotAxis]);
 
-  // Build the move name from (rotAxis, slice). Direction = positive screen drag along dragAxis
-  // means rotation by +sign * rotAxisSign around rotAxisVec, i.e., dir = +sign * rotAxisSign.
-  const dir = (sign * rotAxisSign) as 1 | -1;
-  return moveFromAxisSlice(rotAxis, slice, dir);
-}
+  // 4. Direction: for a rotation about +rotAxis, the hit point's tangential velocity is
+  //    k × r. The drag's agreement with that tangent gives the sign (matches the
+  //    animator's "CW from +axis" convention used by moveFromAxisSlice).
+  const k = AXIS_UNIT[rotAxis];
+  const tangent = new THREE.Vector3().crossVectors(k, pending.hitWorldPoint);
+  const sign = Math.sign(inPlaneDrag.dot(tangent)) as 1 | -1 | 0;
+  if (sign === 0) return null;
 
-function projectDirToScreen(
-  camera: THREE.Camera,
-  worldPoint: THREE.Vector3,
-  dir: THREE.Vector3
-): THREE.Vector2 {
-  const a = worldPoint.clone().project(camera);
-  const b = worldPoint.clone().add(dir).project(camera);
-  return new THREE.Vector2(b.x - a.x, b.y - a.y);
+  return moveFromAxisSlice(rotAxis, slice, sign);
 }
 
 function dominantAxis(v: THREE.Vector3): Axis | null {
@@ -193,3 +225,11 @@ function moveFromAxisSlice(axis: Axis, slice: number, dir: 1 | -1): string | nul
   // If dir matches baseDir, plain move; otherwise prime.
   return dir === entry.baseDir ? entry.name : entry.name + "'";
 }
+
+// Exposed for unit tests / debugging only.
+export const _internal = {
+  faceFromWorldNormal,
+  dominantAxis,
+  moveFromAxisSlice,
+  resolveDragToMove
+};
