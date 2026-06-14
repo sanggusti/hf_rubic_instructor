@@ -1,8 +1,9 @@
 """Gradio entry that serves the built Three.js Rubik's Cube app inline.
 
 The Vite-built bundle in ``frontend/dist/`` is mounted as a FastAPI
-``StaticFiles`` route. Its hashed CSS/JS asset URLs are injected into
-the Gradio page ``<head>`` via ``gr.Blocks(head=...)``, and a single
+``StaticFiles`` route. Its hashed CSS/JS asset URLs (and the fullscreen
+CSS that hides all Gradio chrome) are injected into the Gradio page
+``<head>`` by an on-load ``js`` callback, and a single
 ``<div id="app">`` mount point is rendered inline through ``gr.HTML``.
 
 Two-way bridge:
@@ -15,6 +16,7 @@ Two-way bridge:
 
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
@@ -62,7 +64,7 @@ _assets = _read_built_assets()
 if _assets is not None:
     app.mount(ASSETS_PREFIX, StaticFiles(directory=str(DIST_DIR)), name="cube_assets")
     css_url, js_url = _assets
-    MOUNT_HTML = '<div id="app" style="height:80vh;min-height:520px;border-radius:8px;overflow:hidden"></div>'
+    MOUNT_HTML = '<div id="app"></div>'
     BUILD_OK = True
 else:
     css_url = js_url = ""
@@ -74,12 +76,38 @@ else:
     BUILD_OK = False
 
 
+# CSS that strips all Gradio chrome so the Three.js canvas is the entire visible
+# application. The mount div is pinned to the full viewport; Gradio's container
+# padding, footer, and block gaps are removed.
+FULLSCREEN_CSS = """
+footer { display: none !important; }
+.gradio-container {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+.gradio-container > .main,
+.gradio-container .contain { padding: 0 !important; gap: 0 !important; }
+.app.gradio-container { min-height: 100vh; }
+#app {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+"""
+
+
 # JS that injects the Vite-built CSS link and ES module script into the page
 # <head> on app load. Runs once (idempotent).
 LOAD_BUNDLE_JS = (
     "() => {"
     "  if (window.__rubikBundleLoaded) return;"
     "  window.__rubikBundleLoaded = true;"
+    f'  const style = document.createElement("style");'
+    f"  style.textContent = {json.dumps(FULLSCREEN_CSS)};"
+    "  document.head.appendChild(style);"
     f'  const link = document.createElement("link");'
     f'  link.rel = "stylesheet";'
     f'  link.href = "{css_url}";'
@@ -131,8 +159,11 @@ def _format_state(payload: str) -> str:
     return json.dumps(data, indent=2)
 
 
-with gr.Blocks(title="Rubik's Cube Instructor", fill_height=True) as demo:
-    gr.Markdown("# Rubik's Cube Instructor")
+with gr.Blocks(
+    title="Rubik's Cube Instructor",
+    fill_height=True,
+) as demo:
+    # The Three.js app owns the full viewport; no visible Gradio chrome.
     gr.HTML(MOUNT_HTML)
 
     # Register the ZeroGPU entrypoint with the Gradio app so HF detects a
@@ -143,28 +174,15 @@ with gr.Blocks(title="Rubik's Cube Instructor", fill_height=True) as demo:
         _gpu_trigger.click(_zerogpu_warmup, inputs=None, outputs=_gpu_out)
 
     if BUILD_OK:
-        with gr.Accordion("Python ↔ Cube bridge (demo)", open=False):
-            gr.Markdown(
-                "Python can push moves (e.g. from an LLM) into the cube and read its state back. "
-                "Move grammar: `U D L R F B M E S x y z` with optional `'` prime, space-separated."
-            )
-            with gr.Row():
-                moves_in = gr.Textbox(
-                    label="Moves to apply",
-                    placeholder="R U R' U' F2",
-                    scale=4,
-                )
-                push_btn = gr.Button("Push to cube", scale=1)
-            with gr.Row():
-                read_btn = gr.Button("Read current state")
-                state_raw = gr.Textbox(visible=False)
-                state_out = gr.Code(label="Cube state", language="json", interactive=False)
+        # Hidden Python <-> JS bridge. No visible controls: these components are
+        # internal plumbing for future ZeroGPU-backed inference. Python can push
+        # moves into the cube and read its state back via hidden callbacks.
+        moves_in = gr.Textbox(visible=False)
+        state_raw = gr.Textbox(visible=False)
+        state_out = gr.Textbox(visible=False)
 
-            push_btn.click(lambda m: m, inputs=moves_in, outputs=moves_in)
-            moves_in.change(None, inputs=moves_in, outputs=None, js=PUSH_MOVES_JS)
-
-            read_btn.click(None, inputs=None, outputs=state_raw, js=READ_STATE_JS)
-            state_raw.change(_format_state, inputs=state_raw, outputs=state_out)
+        moves_in.change(None, inputs=moves_in, outputs=None, js=PUSH_MOVES_JS)
+        state_raw.change(_format_state, inputs=state_raw, outputs=state_out)
 
         # Inject the Vite bundle into the page on load.
         demo.load(None, inputs=None, outputs=None, js=LOAD_BUNDLE_JS)
