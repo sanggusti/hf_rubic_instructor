@@ -99,7 +99,9 @@ html, body {
 #app #help,
 #app #dbg-toggle,
 #app #lessons,
-#app #lsn-toggle {
+#app #lsn-toggle,
+#app #practice,
+#app #prc-toggle {
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
@@ -467,6 +469,174 @@ html, body {
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4), 0 0 18px var(--accent-dim);
 }
 #app #lsn-toggle .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
+
+/* ---- Practice panel ---- */
+#app #practice {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  color: var(--text);
+  padding: 14px 16px 16px;
+  border-radius: 14px;
+  font-size: 12px;
+  line-height: 1.45;
+  width: 290px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  z-index: 10;
+  transform-origin: bottom left;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+#app #practice.is-hidden {
+  opacity: 0;
+  transform: scale(0.94) translateY(6px);
+  pointer-events: none;
+}
+#practice::-webkit-scrollbar { width: 6px; }
+#practice::-webkit-scrollbar-thumb { background: var(--accent-dim); border-radius: 6px; }
+
+#practice .prc-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+#practice h3 {
+  margin: 0;
+  font-size: 14px;
+  letter-spacing: .04em;
+  color: var(--accent-soft);
+}
+#practice .prc-close {
+  appearance: none;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 18px;
+  line-height: 1;
+  padding: 0 4px;
+}
+#practice .prc-close:hover { color: var(--text); }
+
+#practice .prc-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+#practice .prc-cat,
+#practice .prc-item,
+#practice .prc-btn {
+  appearance: none;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+#practice .prc-cat { flex: 1; }
+#practice .prc-cat.is-active,
+#practice .prc-item.is-active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(90, 215, 255, 0.10);
+}
+#practice .prc-cat:hover,
+#practice .prc-item:hover,
+#practice .prc-btn:hover:not(:disabled) {
+  border-color: var(--accent-dim);
+}
+
+#practice .prc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+#practice .prc-item { text-align: left; }
+
+#practice .prc-detail {
+  border-top: 1px solid var(--panel-border);
+  padding-top: 10px;
+}
+#practice .prc-hint { color: var(--text-dim); margin: 4px 0; }
+#practice .prc-title { margin: 0 0 4px; font-size: 13px; }
+#practice .prc-meta {
+  margin: 0 0 6px;
+  color: var(--text-dim);
+  font-size: 11px;
+  text-transform: capitalize;
+}
+#practice .prc-prompt { margin: 0 0 8px; color: var(--text-dim); }
+#practice .prc-counter {
+  font-size: 11px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--accent-soft);
+  margin-bottom: 8px;
+}
+#practice .prc-feedback {
+  font-size: 12px;
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 7px 8px;
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-dim);
+}
+#practice .prc-feedback.correct {
+  border-color: rgba(94, 242, 160, 0.45);
+  color: var(--ok);
+}
+#practice .prc-feedback.wrong {
+  border-color: rgba(255, 122, 138, 0.45);
+  color: var(--no);
+}
+#practice .prc-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+#practice .prc-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* Floating reopen toggle, shown when the practice panel is closed */
+#app #prc-toggle {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  z-index: 11;
+  appearance: none;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border-radius: 11px;
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+#app #prc-toggle.is-visible { display: inline-flex; }
+#app #prc-toggle:hover {
+  border-color: var(--accent-dim);
+  background: rgba(90, 215, 255, 0.10);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4), 0 0 18px var(--accent-dim);
+}
+#app #prc-toggle .dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;

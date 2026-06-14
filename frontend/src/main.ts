@@ -8,6 +8,9 @@ import { DebuggerPanel } from './ui/debugger';
 import { LessonsPanel } from './ui/lessons_panel';
 import { LessonEngine, type LessonApi } from './education/lesson_engine';
 import { LESSON_CATALOG } from './education/lesson_catalog';
+import { PracticePanel } from './ui/practice_panel';
+import { PracticeEngine, type PracticeApi } from './education/practice_engine';
+import { PRACTICE_DRILLS } from './education/practice_drills';
 import { applyMove, solvedState, isSolved, cloneState, type State } from './core/state';
 import { generateScramble } from './scene/cube/scramble';
 import DEBUG_CONFIG from './configs/debug-config';
@@ -44,6 +47,7 @@ function boot(container: HTMLElement): void {
 
   const moveSubscribers = new Set<(m: string, s: State) => void>();
   let lessonEngine: LessonEngine | null = null;
+  let practiceEngine: PracticeEngine | null = null;
 
   animator.onMoveComplete = (name) => {
     applyMove(state, name);
@@ -67,6 +71,7 @@ function boot(container: HTMLElement): void {
     debuggerPanel?.reset();
     debuggerPanel?.render(state);
     lessonEngine?.handleCubeReset();
+    practiceEngine?.handleCubeReset();
   }
 
   attachKeyboard(animator, { onReset: resetCube });
@@ -122,6 +127,15 @@ function boot(container: HTMLElement): void {
     const storage = typeof localStorage !== 'undefined' ? localStorage : null;
     lessonEngine = new LessonEngine(lessonApi, LESSON_CATALOG, storage);
     new LessonsPanel(container, lessonEngine);
+
+    const practiceApi: PracticeApi = {
+      applyMoves: api.applyMoves,
+      getState: api.getState,
+      isSolved: api.isSolved,
+      onMove: api.onMove
+    };
+    practiceEngine = new PracticeEngine(practiceApi, PRACTICE_DRILLS);
+    new PracticePanel(container, practiceEngine);
   }
 
   // Notify any host (e.g. Gradio) that may be waiting on the API to attach.
