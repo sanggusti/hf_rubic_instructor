@@ -11,6 +11,7 @@ export interface LessonStep {
     body: string;
     setupMoves?: string[];
     expectedMoves?: string[];
+    hints?: string[];
     validator: StepValidator;
 }
 

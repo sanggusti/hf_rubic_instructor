@@ -6,6 +6,7 @@ import { Emitter } from '../core/events';
 import type { State } from '../core/state';
 import type { Lesson, LessonStep, LessonTrack } from './lesson_types';
 import { validateStep } from './lesson_validator';
+import { buildCoachingMessages, type CoachingMessage } from './coaching';
 import { loadProgress, saveProgress, clearProgress, type StorageLike } from './lesson_progress';
 
 // The slice of the cube API the engine needs. Keeping it narrow lets tests
@@ -25,6 +26,7 @@ export interface LessonView {
     completedStepIds: string[];
     stepCompleted: boolean;
     lessonCompleted: boolean;
+    coachingMessages: CoachingMessage[];
 }
 
 export type EngineState =
@@ -202,6 +204,13 @@ export class LessonEngine {
         return this.current.steps.every((s) => this.completedStepIds.includes(s.id));
     }
 
+    private getNextLessonTitle(): string | undefined {
+        if (!this.current) return undefined;
+        const sameTrack = this.lessons.filter((l) => l.track === this.current!.track);
+        const index = sameTrack.findIndex((l) => l.id === this.current!.id);
+        return index >= 0 && index < sameTrack.length - 1 ? sameTrack[index + 1].title : undefined;
+    }
+
     private persist(): void {
         if (!this.current) return;
         const lessonCompleted = this.isLessonCompleted();
@@ -219,14 +228,26 @@ export class LessonEngine {
     private snapshot(): EngineState {
         if (!this.current) return { lesson: null };
         const step = this.current.steps[this.stepIndex];
+        const stepCompleted = this.completedStepIds.includes(step.id);
+        const lessonCompleted = this.isLessonCompleted();
+        const isLastStep = this.stepIndex >= this.current.steps.length - 1;
+        const coachingMessages = buildCoachingMessages({
+            step,
+            moveHistory: this.moveHistory,
+            stepCompleted,
+            lessonCompleted,
+            isLastStep,
+            nextLessonTitle: this.getNextLessonTitle()
+        });
         return {
             lesson: this.current,
             step,
             stepIndex: this.stepIndex,
             stepCount: this.current.steps.length,
             completedStepIds: this.completedStepIds.slice(),
-            stepCompleted: this.completedStepIds.includes(step.id),
-            lessonCompleted: this.isLessonCompleted()
+            stepCompleted,
+            lessonCompleted,
+            coachingMessages
         };
     }
 

@@ -408,6 +408,38 @@ html, body {
 }
 #lessons .lsn-btn:disabled { opacity: 0.4; cursor: default; }
 
+#lessons .lsn-coaching {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+#lessons .lsn-coaching-item {
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 7px 8px;
+  background: rgba(255, 255, 255, 0.04);
+}
+#lessons .lsn-coaching-item strong {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 11px;
+  color: var(--accent-soft);
+}
+#lessons .lsn-coaching-item p {
+  margin: 0;
+  color: var(--text-dim);
+}
+#lessons .lsn-coaching-item.mistake {
+  border-color: rgba(255, 122, 138, 0.45);
+}
+#lessons .lsn-coaching-item.mistake strong {
+  color: var(--no);
+}
+#lessons .lsn-coaching-item.recommendation strong {
+  color: var(--ok);
+}
+
 /* Floating reopen toggle, shown when the lessons panel is closed */
 #app #lsn-toggle {
   position: absolute;
