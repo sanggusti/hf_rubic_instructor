@@ -81,7 +81,25 @@ else:
 # padding, footer, and block gaps are removed.
 FULLSCREEN_CSS = """
 footer { display: none !important; }
-html, body, gradio-app, .gradio-container, .gradio-container .main {
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100% !important;
+    overflow: hidden !important;
+}
+/* Clamp every Gradio shell layer to the viewport. Using a fixed height with
+   overflow:hidden (NOT min-height) is critical on HF Spaces: the iframe
+   auto-resizer grows the frame to fit content scrollHeight, and any
+   min-height:100vh element feeds an infinite "stretch downward" loop. */
+gradio-app,
+.gradio-container,
+.gradio-container > .main,
+.gradio-container .wrap,
+.gradio-container .contain {
+    height: 100vh !important;
+    max-height: 100vh !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
     background: #0a0e1a !important;
     color: #e6edf6 !important;
 }
@@ -92,13 +110,11 @@ html, body, gradio-app, .gradio-container, .gradio-container .main {
 }
 .gradio-container > .main,
 .gradio-container .contain { padding: 0 !important; gap: 0 !important; }
-.app.gradio-container { min-height: 100vh; }
 #app {
     position: fixed !important;
     inset: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
-    min-height: 100vh !important;
     overflow: hidden !important;
 }
 """
