@@ -90,11 +90,12 @@ footer { display: none !important; }
 .gradio-container .contain { padding: 0 !important; gap: 0 !important; }
 .app.gradio-container { min-height: 100vh; }
 #app {
-    position: fixed;
-    inset: 0;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    overflow: hidden !important;
 }
 """
 
@@ -105,9 +106,6 @@ LOAD_BUNDLE_JS = (
     "() => {"
     "  if (window.__rubikBundleLoaded) return;"
     "  window.__rubikBundleLoaded = true;"
-    f'  const style = document.createElement("style");'
-    f"  style.textContent = {json.dumps(FULLSCREEN_CSS)};"
-    "  document.head.appendChild(style);"
     f'  const link = document.createElement("link");'
     f'  link.rel = "stylesheet";'
     f'  link.href = "{css_url}";'
@@ -116,6 +114,11 @@ LOAD_BUNDLE_JS = (
     f'  s.type = "module";'
     f'  s.src = "{js_url}";'
     "  document.head.appendChild(s);"
+    # Append the fullscreen overrides LAST so they win the cascade against the
+    # bundle's own ``#app`` rule (equal specificity -> later wins).
+    f'  const style = document.createElement("style");'
+    f"  style.textContent = {json.dumps(FULLSCREEN_CSS)};"
+    "  document.head.appendChild(style);"
     "}"
 )
 
