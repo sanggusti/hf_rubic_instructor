@@ -97,7 +97,9 @@ html, body {
 /* ---- Glass panel shared look ---- */
 #app #debugger,
 #app #help,
-#app #dbg-toggle {
+#app #dbg-toggle,
+#app #lessons,
+#app #lsn-toggle {
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
@@ -273,3 +275,169 @@ html, body {
   max-width: min(70vw, 560px);
 }
 #help b { color: var(--accent-soft); font-weight: 600; }
+
+/* ---- Lessons panel ---- */
+#app #lessons {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  color: var(--text);
+  padding: 14px 16px 16px;
+  border-radius: 14px;
+  font-size: 12px;
+  line-height: 1.45;
+  width: 290px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  z-index: 10;
+  transform-origin: top left;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+#app #lessons.is-hidden {
+  opacity: 0;
+  transform: scale(0.94) translateY(-6px);
+  pointer-events: none;
+}
+#lessons::-webkit-scrollbar { width: 6px; }
+#lessons::-webkit-scrollbar-thumb { background: var(--accent-dim); border-radius: 6px; }
+
+#lessons .lsn-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+#lessons h3 {
+  margin: 0;
+  font-size: 14px;
+  letter-spacing: .04em;
+  color: var(--accent-soft);
+}
+#lessons .lsn-close {
+  appearance: none;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 18px;
+  line-height: 1;
+  padding: 0 4px;
+}
+#lessons .lsn-close:hover { color: var(--text); }
+
+#lessons .lsn-filter {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+#lessons .lsn-track,
+#lessons .lsn-item,
+#lessons .lsn-btn {
+  appearance: none;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+#lessons .lsn-track { flex: 1; }
+#lessons .lsn-track.is-active,
+#lessons .lsn-item.is-active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(90, 215, 255, 0.10);
+}
+#lessons .lsn-track:hover,
+#lessons .lsn-item:hover,
+#lessons .lsn-btn:hover:not(:disabled) {
+  border-color: var(--accent-dim);
+}
+
+#lessons .lsn-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+#lessons .lsn-item { text-align: left; }
+
+#lessons .lsn-detail {
+  border-top: 1px solid var(--panel-border);
+  padding-top: 10px;
+}
+#lessons .lsn-hint { color: var(--text-dim); margin: 4px 0; }
+#lessons .lsn-title { margin: 0 0 4px; font-size: 13px; }
+#lessons .lsn-audience { margin: 0 0 6px; color: var(--text-dim); font-size: 11px; font-style: italic; }
+#lessons .lsn-desc { margin: 0 0 8px; color: var(--text-dim); }
+#lessons .lsn-counter {
+  font-size: 11px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--accent-soft);
+  margin-bottom: 4px;
+}
+#lessons .lsn-step-title { margin: 0 0 4px; font-size: 12px; }
+#lessons .lsn-step-body { margin: 0 0 8px; }
+#lessons .lsn-moves {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 7px;
+  padding: 6px 8px;
+  margin-bottom: 8px;
+}
+#lessons .lsn-status {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+#lessons .lsn-status.done {
+  color: var(--ok);
+  text-shadow: 0 0 10px rgba(94, 242, 160, 0.4);
+}
+#lessons .lsn-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+#lessons .lsn-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* Floating reopen toggle, shown when the lessons panel is closed */
+#app #lsn-toggle {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 11;
+  appearance: none;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border-radius: 11px;
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+#app #lsn-toggle.is-visible { display: inline-flex; }
+#app #lsn-toggle:hover {
+  border-color: var(--accent-dim);
+  background: rgba(90, 215, 255, 0.10);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4), 0 0 18px var(--accent-dim);
+}
+#app #lsn-toggle .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
