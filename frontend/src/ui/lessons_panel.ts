@@ -178,6 +178,26 @@ export class LessonsPanel {
             : 'In progress';
         this.detailEl.appendChild(status);
 
+        if (state.coachingMessages.length) {
+            const coaching = document.createElement('div');
+            coaching.className = 'lsn-coaching';
+            for (const message of state.coachingMessages) {
+                const item = document.createElement('div');
+                item.className = `lsn-coaching-item ${message.kind}`;
+
+                const itemTitle = document.createElement('strong');
+                itemTitle.textContent = message.title;
+
+                const itemBody = document.createElement('p');
+                itemBody.textContent = message.body;
+
+                item.appendChild(itemTitle);
+                item.appendChild(itemBody);
+                coaching.appendChild(item);
+            }
+            this.detailEl.appendChild(coaching);
+        }
+
         const actions = document.createElement('div');
         actions.className = 'lsn-actions';
 

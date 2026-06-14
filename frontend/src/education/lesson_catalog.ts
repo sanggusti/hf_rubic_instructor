@@ -24,6 +24,7 @@ export const LESSON_CATALOG: Lesson[] = [
                 body:
                     "`R` means turn the right face clockwise once. Drag the right face up, or press the R key. Do a single R turn now.",
                 expectedMoves: ['R'],
+                hints: ['Use the R key, or drag the right face upward.'],
                 validator: { type: 'moveSequence', moves: ['R'] }
             },
             {
@@ -65,6 +66,7 @@ export const LESSON_CATALOG: Lesson[] = [
                 body:
                     "Turn the right face clockwise (`R`), the top clockwise (`U`), the right face back (`R'`), then the top back (`U'`). Take your time \u2014 the panel will confirm when you finish. Use Apply example moves if you want to watch it first.",
                 expectedMoves: ['R', 'U', "R'", "U'"],
+                hints: ['Say the moves out loud: R, U, R prime, U prime.'],
                 validator: { type: 'moveSequence', moves: ['R', 'U', "R'", "U'"] }
             },
             {
@@ -73,6 +75,7 @@ export const LESSON_CATALOG: Lesson[] = [
                 body:
                     'The cube is one quarter-turn away from solved. Press Set up step to scramble it by a single turn, then undo that turn to make every face one solid color again.',
                 setupMoves: ['R'],
+                hints: ['Undo the setup move by turning the same face in the opposite direction.'],
                 validator: { type: 'cubeSolved' }
             }
         ]
