@@ -20,10 +20,10 @@ export const PRACTICE_DRILLS: Drill[] = [
         title: 'Sune',
         category: 'algorithm',
         difficulty: 'medium',
-        prompt: 'Run the Sune algorithm: R U R\u2032 U R U2 R\u2032.',
-        expectedMoves: ['R', 'U', "R'", 'U', 'R', 'U2', "R'"],
+        prompt: 'Run the Sune algorithm: R U R\u2032 U R U U R\u2032.',
+        expectedMoves: ['R', 'U', "R'", 'U', 'R', 'U', 'U', "R'"],
         rounds: 1,
-        validator: { type: 'moveSequence', moves: ['R', 'U', "R'", 'U', 'R', 'U2', "R'"] }
+        validator: { type: 'moveSequence', moves: ['R', 'U', "R'", 'U', 'R', 'U', 'U', "R'"] }
     },
     {
         id: 'solve-one-move',
