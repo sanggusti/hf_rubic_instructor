@@ -81,6 +81,10 @@ else:
 # padding, footer, and block gaps are removed.
 FULLSCREEN_CSS = """
 footer { display: none !important; }
+html, body, gradio-app, .gradio-container, .gradio-container .main {
+    background: #0a0e1a !important;
+    color: #e6edf6 !important;
+}
 .gradio-container {
     max-width: 100% !important;
     padding: 0 !important;

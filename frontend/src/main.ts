@@ -15,6 +15,15 @@ import { applyMove, solvedState, isSolved, cloneState, type State } from './core
 import { generateScramble } from './scene/cube/scramble';
 import DEBUG_CONFIG from './configs/debug-config';
 
+// Standby ("breathing") animation tuning. After a short idle delay the cube
+// slowly yaws and bobs; any interaction or an active lesson/drill eases it back
+// to its default resting pose.
+const IDLE_DELAY_MS = 2500; // inactivity before the standby drift begins
+const IDLE_YAW_SPEED = 0.00025; // radians per ms
+const IDLE_BOB_FREQ = 0.0012; // radians per ms
+const IDLE_BOB_AMP = 0.06; // world units
+const IDLE_EASE_TAU = 140; // ms time-constant for easing home
+
 declare global {
   interface Window {
     rubikInstructor?: RubikInstructorApi;
@@ -49,7 +58,16 @@ function boot(container: HTMLElement): void {
   let lessonEngine: LessonEngine | null = null;
   let practiceEngine: PracticeEngine | null = null;
 
+  // Standby animation state.
+  let idleEnabled = true; // false while a lesson/drill is active
+  let pointerActive = false; // true while the user is dragging/pressing
+  let lastActivityTs = performance.now();
+  let lastFrameTs = lastActivityTs;
+  const markActivity = (): void => { lastActivityTs = performance.now(); };
+
+  animator.onMoveStart = () => markActivity();
   animator.onMoveComplete = (name) => {
+    markActivity();
     applyMove(state, name);
     debuggerPanel?.pushMove(name);
     debuggerPanel?.render(state);
@@ -77,10 +95,34 @@ function boot(container: HTMLElement): void {
   attachKeyboard(animator, { onReset: resetCube });
   attachDragControls(cube, animator, ctx.camera, ctx.renderer.domElement);
 
+  // Pause the standby drift while the user is interacting with the canvas.
+  container.addEventListener('pointerdown', () => { pointerActive = true; markActivity(); });
+  window.addEventListener('pointerup', () => { pointerActive = false; markActivity(); });
+
   renderHelp(container);
 
+  function updateIdle(now: number, dt: number): void {
+    const idleReady = now - lastActivityTs > IDLE_DELAY_MS;
+    const resting = idleEnabled && idleReady && !animator.isBusy() && !pointerActive;
+    if (resting) {
+      cube.root.rotation.y += IDLE_YAW_SPEED * dt;
+      cube.root.position.y = Math.sin(now * IDLE_BOB_FREQ) * IDLE_BOB_AMP;
+    } else {
+      // Ease orientation + bob back to the default resting pose (shortest path).
+      const k = 1 - Math.exp(-dt / IDLE_EASE_TAU);
+      let a = cube.root.rotation.y % (Math.PI * 2);
+      if (a > Math.PI) a -= Math.PI * 2;
+      else if (a < -Math.PI) a += Math.PI * 2;
+      cube.root.rotation.y = a * (1 - k);
+      cube.root.position.y *= (1 - k);
+    }
+  }
+
   function tick(now: number): void {
+    const dt = Math.min(now - lastFrameTs, 64);
+    lastFrameTs = now;
     animator.update(now);
+    updateIdle(now, dt);
     ctx.controls?.update();
     ctx.renderer.render(ctx.scene, ctx.camera);
     requestAnimationFrame(tick);
@@ -136,6 +178,16 @@ function boot(container: HTMLElement): void {
     };
     practiceEngine = new PracticeEngine(practiceApi, PRACTICE_DRILLS);
     new PracticePanel(container, practiceEngine);
+
+    // Stop the standby drift and recentre the cube while a lesson or drill is
+    // active; resume it once both are closed.
+    const refreshIdle = (): void => {
+      const active = !!lessonEngine?.getCurrentLesson() || !!practiceEngine?.getCurrentDrill();
+      idleEnabled = !active;
+      if (active) markActivity();
+    };
+    lessonEngine.subscribe(refreshIdle);
+    practiceEngine.subscribe(refreshIdle);
   }
 
   // Notify any host (e.g. Gradio) that may be waiting on the API to attach.
