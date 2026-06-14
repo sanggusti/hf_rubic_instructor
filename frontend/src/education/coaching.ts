@@ -78,7 +78,18 @@ function sequenceMessages(
         return [step.hints?.length ? hint(step.hints[0]) : hint(`Start with ${expectedMoves[0]}.`)];
     }
 
-    // Longest correct prefix of the attempt against the expected sequence.
+    // The step completes when the history ENDS with the expected moves
+    // (endsWithMoves), so the user's current attempt is the longest trailing
+    // run that forms a prefix of the sequence. Measuring from the tail means a
+    // mistake clears as soon as the user starts the sequence over correctly.
+    const onTrack = trailingPrefixLength(moveHistory, expectedMoves);
+    if (onTrack > 0) {
+        if (onTrack < expectedMoves.length) return [hint(`Next move: ${expectedMoves[onTrack]}.`)];
+        return [];
+    }
+
+    // Off track: describe the divergence using the forward prefix match so the
+    // message keeps the "Expected X, but got Y" context of the first wrong move.
     let matched = 0;
     while (
         matched < moveHistory.length &&
@@ -87,17 +98,26 @@ function sequenceMessages(
     ) {
         matched++;
     }
-
-    if (matched === moveHistory.length) {
-        // Still on track; suggest the next move if any remain.
-        if (matched < expectedMoves.length) return [hint(`Next move: ${expectedMoves[matched]}.`)];
-        return [];
-    }
-
-    // A move broke the expected sequence.
     const expectedMove = expectedMoves[matched] ?? expectedMoves[expectedMoves.length - 1];
+    const gotMove = moveHistory[matched] ?? moveHistory[moveHistory.length - 1];
     return [
-        mistake(`Expected ${expectedMove}, but got ${moveHistory[matched]}.`),
+        mistake(`Expected ${expectedMove}, but got ${gotMove}.`),
         recommendation('Try the sequence again from the beginning, or use Apply example moves.')
     ];
+}
+
+// Length of the longest suffix of `history` that is a prefix of `expected`.
+function trailingPrefixLength(history: string[], expected: string[]): number {
+    const max = Math.min(history.length, expected.length);
+    for (let p = max; p > 0; p--) {
+        let ok = true;
+        for (let i = 0; i < p; i++) {
+            if (history[history.length - p + i] !== expected[i]) {
+                ok = false;
+                break;
+            }
+        }
+        if (ok) return p;
+    }
+    return 0;
 }

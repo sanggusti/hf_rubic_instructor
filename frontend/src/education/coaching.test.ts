@@ -63,6 +63,19 @@ describe('buildCoachingMessages', () => {
         expect(messages.some((m) => m.kind === 'recommendation')).toBe(true);
     });
 
+    it('clears the mistake once the user restarts the sequence correctly', () => {
+        // Expected R U R' U'. The user errs (D), then begins again from the top.
+        const messages = buildCoachingMessages({
+            ...base,
+            step: seqStep(['R', 'U', "R'", "U'"]),
+            moveHistory: ['R', 'U', 'D', 'R']
+        });
+        expect(messages.some((m) => m.kind === 'mistake')).toBe(false);
+        const next = messages.find((m) => m.kind === 'hint');
+        expect(next).toBeDefined();
+        expect(next!.body).toContain('U');
+    });
+
     it('recommends marking complete for manual steps without hints', () => {
         const messages = buildCoachingMessages({
             ...base,
