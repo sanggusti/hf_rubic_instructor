@@ -85,31 +85,44 @@ html, body {
     margin: 0 !important;
     padding: 0 !important;
     height: 100% !important;
+    max-height: 100% !important;
     overflow: hidden !important;
 }
-/* Clamp every Gradio shell layer to the viewport. Using a fixed height with
-   overflow:hidden (NOT min-height) is critical on HF Spaces: the iframe
-   auto-resizer grows the frame to fit content scrollHeight, and any
-   min-height:100vh element feeds an infinite "stretch downward" loop. */
-gradio-app,
-.gradio-container,
-.gradio-container > .main,
-.gradio-container .wrap,
-.gradio-container .contain {
+/* On HF Spaces the app is embedded in an auto-resizing iframe: the parent sets
+   the iframe height from the content's scrollHeight. Any in-flow element sized
+   in vh/% feeds an infinite "stretch downward" loop. Taking the whole Gradio
+   shell OUT of flow (position:fixed) collapses body scrollHeight to ~0, so the
+   resizer has nothing to grow. inset:0 then fills the iframe exactly. */
+gradio-app {
+    display: block !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
+}
+.gradio-container {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
     height: 100vh !important;
+    max-width: 100% !important;
     max-height: 100vh !important;
     min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
     overflow: hidden !important;
     background: #0a0e1a !important;
     color: #e6edf6 !important;
 }
-.gradio-container {
-    max-width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-}
 .gradio-container > .main,
-.gradio-container .contain { padding: 0 !important; gap: 0 !important; }
+.gradio-container .wrap,
+.gradio-container .contain {
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    overflow: hidden !important;
+}
 #app {
     position: fixed !important;
     inset: 0 !important;
@@ -139,6 +152,19 @@ LOAD_BUNDLE_JS = (
     f'  const style = document.createElement("style");'
     f"  style.textContent = {json.dumps(FULLSCREEN_CSS)};"
     "  document.head.appendChild(style);"
+    # Belt-and-suspenders against the HF Spaces iframe auto-resizer: hard-clamp
+    # the document to the visible viewport so reported scrollHeight can never
+    # exceed innerHeight, which is what drives the runaway vertical stretch.
+    "  const pin = () => {"
+    "    const h = window.innerHeight;"
+    "    for (const el of [document.documentElement, document.body]) {"
+    "      el.style.height = h + 'px';"
+    "      el.style.maxHeight = h + 'px';"
+    "      el.style.overflow = 'hidden';"
+    "    }"
+    "  };"
+    "  pin();"
+    "  window.addEventListener('resize', pin);"
     "}"
 )
 
@@ -184,7 +210,6 @@ def _format_state(payload: str) -> str:
 
 with gr.Blocks(
     title="Rubik's Cube Instructor",
-    fill_height=True,
 ) as demo:
     # The Three.js app owns the full viewport; no visible Gradio chrome.
     gr.HTML(MOUNT_HTML)
